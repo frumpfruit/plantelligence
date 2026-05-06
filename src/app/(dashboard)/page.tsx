@@ -29,6 +29,7 @@ import {
 } from "recharts"
 import { motion, AnimatePresence } from "framer-motion"
 import { useSensors } from "@/components/SensorProvider"
+import { cn } from "@/lib/utils"
 
 const chartData = [
   { name: 'Sen', ph: 5.5, suhu: 24.2, nutrisi: 600, cahaya: 8.5 },
@@ -44,7 +45,10 @@ export default function DashboardPage() {
   const { data, isRefreshing } = useSensors()
 
   // Determine system status based on sensors
-  const isWarning = data.ph < 5.6 || data.tds < 620 || data.tempAir > 30
+  const isWarningPh = data.ph < 5.6
+  const isCriticalTds = data.tds < 620
+  const isWarningTemp = data.tempAir > 30
+  const isWarning = isWarningPh || isCriticalTds || isWarningTemp
   
   return (
     <div className="space-y-6">
@@ -52,7 +56,7 @@ export default function DashboardPage() {
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Dashboard Overview</h1>
           <p className="text-sm text-muted-foreground mt-1">
-            Ringkasan sistem hidroponik dan performa tanaman real-time.
+            Status sistem kini divisualisasikan dengan perubahan warna kartu.
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -69,10 +73,16 @@ export default function DashboardPage() {
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         {/* pH Card */}
-        <Card className="hover:shadow-md transition-shadow">
+        <Card className={cn(
+          "hover:shadow-md transition-all duration-500 border-2",
+          isWarningPh ? "border-warning bg-warning/5 shadow-warning/5" : "hover:border-blue-200"
+        )}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">pH Air</CardTitle>
-            <FlaskConical className={`h-4 w-4 ${data.ph < 5.6 ? 'text-destructive animate-pulse' : 'text-blue-500'}`} />
+            <FlaskConical className={cn(
+              "h-4 w-4 transition-all",
+              isWarningPh ? "text-warning animate-pulse" : "text-blue-500"
+            )} />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
@@ -87,17 +97,26 @@ export default function DashboardPage() {
                 </motion.span>
               </AnimatePresence>
             </div>
-            <p className={`text-xs mt-1 ${data.ph < 5.6 ? 'text-destructive font-medium' : 'text-muted-foreground'}`}>
-              {data.ph < 5.6 ? "Terlalu Rendah!" : "Ideal (5.5 - 6.5)"}
+            <p className={cn(
+              "text-xs mt-1 font-medium",
+              isWarningPh ? "text-warning" : "text-muted-foreground font-normal"
+            )}>
+              {isWarningPh ? "Terlalu Rendah!" : "Ideal (5.5 - 6.5)"}
             </p>
           </CardContent>
         </Card>
         
         {/* TDS Card */}
-        <Card className="hover:shadow-md transition-shadow">
+        <Card className={cn(
+          "hover:shadow-md transition-all duration-500 border-2",
+          isCriticalTds ? "border-destructive bg-destructive/5 shadow-destructive/5" : "hover:border-purple-200"
+        )}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Nutrisi (TDS)</CardTitle>
-            <Activity className={`h-4 w-4 ${data.tds < 620 ? 'text-destructive animate-pulse' : 'text-purple-500'}`} />
+            <Activity className={cn(
+              "h-4 w-4 transition-all",
+              isCriticalTds ? "text-destructive animate-bounce" : "text-purple-500"
+            )} />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
@@ -113,40 +132,52 @@ export default function DashboardPage() {
               </AnimatePresence>
               <span className="text-sm font-normal text-muted-foreground ml-1">ppm</span>
             </div>
-            <p className={`text-xs mt-1 ${data.tds < 620 ? 'text-destructive font-medium' : 'text-emerald-500'}`}>
-              {data.tds < 620 ? "Perlu Tambah Nutrisi" : "Stabil"}
+            <p className={cn(
+              "text-xs mt-1 font-medium",
+              isCriticalTds ? "text-destructive" : "text-emerald-500"
+            )}>
+              {isCriticalTds ? "Perlu Tambah Nutrisi" : "Stabil"}
             </p>
           </CardContent>
         </Card>
 
         {/* Temp Card */}
-        <Card className="hover:shadow-md transition-shadow">
+        <Card className={cn(
+          "hover:shadow-md transition-all duration-500 border-2",
+          isWarningTemp ? "border-warning bg-warning/5 shadow-warning/5" : "hover:border-rose-200"
+        )}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Suhu Air</CardTitle>
-            <Thermometer className="h-4 w-4 text-rose-500" />
+            <CardTitle className="text-sm font-medium">Suhu Udara</CardTitle>
+            <Thermometer className={cn(
+              "h-4 w-4 transition-all",
+              isWarningTemp ? "text-warning animate-pulse" : "text-rose-500"
+            )} />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
               <AnimatePresence mode="wait">
                 <motion.span
-                  key={data.tempWater}
+                  key={data.tempAir}
                   initial={{ opacity: 0, y: -5 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 5 }}
                 >
-                  {isRefreshing ? "..." : data.tempWater}
+                  {isRefreshing ? "..." : data.tempAir}
                 </motion.span>
               </AnimatePresence>
               <span className="text-sm font-normal text-muted-foreground ml-1">°C</span>
             </div>
-            <p className="text-xs text-muted-foreground mt-1 text-info">
-              Normal
+            <p className={cn(
+              "text-xs mt-1 font-medium",
+              isWarningTemp ? "text-warning" : "text-info font-normal"
+            )}>
+              {isWarningTemp ? "Suhu Terlalu Panas!" : "Normal"}
             </p>
           </CardContent>
         </Card>
 
         {/* Lux Card */}
-        <Card className="hover:shadow-md transition-shadow">
+        <Card className="hover:shadow-md transition-all duration-500 border-2 hover:border-amber-200">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Intensitas Cahaya</CardTitle>
             <Lightbulb className="h-4 w-4 text-amber-500" />
