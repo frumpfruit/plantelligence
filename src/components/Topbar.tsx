@@ -1,7 +1,8 @@
-import { Bell, Search, Menu } from "lucide-react"
+import { Bell, Search, Menu, LogOut } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar"
 import { Input } from "./ui/input"
 import { Button } from "./ui/button"
+import { logoutAction } from "@/lib/actions/auth"
 
 interface TopbarProps {
   onMenuClick: () => void
@@ -37,6 +38,11 @@ export function Topbar({ onMenuClick }: TopbarProps) {
             <AvatarImage src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="Avatar" />
             <AvatarFallback>AF</AvatarFallback>
           </Avatar>
+          <form action={logoutAction}>
+            <button type="submit" className="ml-2 rounded-full p-2 hover:bg-muted transition-colors" title="Keluar">
+              <LogOut className="h-5 w-5 text-muted-foreground hover:text-destructive" />
+            </button>
+          </form>
         </div>
       </div>
     </header>
