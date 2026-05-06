@@ -293,6 +293,7 @@ export default function DashboardPage() {
                 <AnimatePresence mode="popLayout">
                   {isWarning && (
                     <motion.div 
+                      key="warning-log"
                       initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
                       className="flex items-start gap-3"
@@ -304,14 +305,14 @@ export default function DashboardPage() {
                       </div>
                     </motion.div>
                   )}
-                  <div className="flex items-start gap-3">
+                  <div key="pump-log" className="flex items-start gap-3">
                     <span className="flex h-2 w-2 rounded-full bg-emerald-500 mt-1.5 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
                     <div>
                       <p className="text-sm font-medium">Pompa Nutrisi A menyala (Dosing 50ml)</p>
                       <p className="text-xs text-muted-foreground mt-0.5">Baru saja</p>
                     </div>
                   </div>
-                  <div className="flex items-start gap-3">
+                  <div key="light-log" className="flex items-start gap-3">
                     <span className="flex h-2 w-2 rounded-full bg-amber-500 mt-1.5" />
                     <div>
                       <p className="text-sm font-medium">Intensitas cahaya ditingkatkan (Auto-Dim)</p>

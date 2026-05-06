@@ -158,7 +158,7 @@ export default function NotificationPage() {
                   </div>
                 </motion.div>
               )) : (
-                <div className="p-12 text-center text-muted-foreground italic">
+                <div key="empty" className="p-12 text-center text-muted-foreground italic">
                   Tidak ada notifikasi baru.
                 </div>
               )}

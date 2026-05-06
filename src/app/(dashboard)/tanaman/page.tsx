@@ -235,6 +235,7 @@ export default function PlantListPage() {
         {/* Modal Tambah/Edit Tanaman */}
         {isModalOpen && (
           <motion.div 
+            key="plant-form-modal"
             variants={overlayVariants}
             initial="hidden"
             animate="visible"
@@ -325,6 +326,7 @@ export default function PlantListPage() {
         {/* Modal Kelola Master Jenis Tanaman */}
         {isTypeModalOpen && (
           <motion.div 
+            key="type-master-modal"
             variants={overlayVariants}
             initial="hidden"
             animate="visible"
