@@ -130,7 +130,7 @@ export default function PlantListPage() {
   // Animation variants
   const modalVariants = {
     hidden: { opacity: 0, scale: 0.95, y: 20 },
-    visible: { opacity: 1, scale: 1, y: 0, transition: { type: "spring", duration: 0.5, bounce: 0.3 } },
+    visible: { opacity: 1, scale: 1, y: 0, transition: { type: "spring" as const, duration: 0.5, bounce: 0.3 } },
     exit: { opacity: 0, scale: 0.95, y: -20, transition: { duration: 0.2 } }
   }
 
