@@ -34,12 +34,12 @@ export function SensorProvider({ children }: { children: ReactNode }) {
 
   const generateNewData = useCallback(() => {
     const newData = {
-      ph: Number((5.5 + Math.random() * 1.0).toFixed(1)),
-      tds: Math.floor(600 + Math.random() * 150),
-      tempWater: Number((23.0 + Math.random() * 3.0).toFixed(1)),
-      humidity: Math.floor(60 + Math.random() * 15),
-      tempAir: Number((26.0 + Math.random() * 5.0).toFixed(1)),
-      lux: (10 + Math.random() * 5).toFixed(1) + "k"
+      ph: Number((5.8 + Math.random() * 0.5).toFixed(1)), // 5.8 - 6.3
+      tds: Math.floor(750 + Math.random() * 100),       // 750 - 850
+      tempWater: Number((23.8 + Math.random() * 0.5).toFixed(1)), // 23.8 - 24.3 (Near 24)
+      humidity: Math.floor(65 + Math.random() * 10),
+      tempAir: Number((28.0 + Math.random() * 3.0).toFixed(1)),
+      lux: (12 + Math.random() * 2).toFixed(1) + "k"
     }
     setData(newData)
     setLastUpdate("Just now")

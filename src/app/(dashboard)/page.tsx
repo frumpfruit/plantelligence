@@ -45,9 +45,9 @@ export default function DashboardPage() {
   const { data, isRefreshing } = useSensors()
 
   // Determine system status based on sensors
-  const isWarningPh = data.ph < 5.5
+  const isWarningPh = data.ph < 6.0
   const isCriticalTds = data.tds < 500
-  const isWarningTemp = data.tempAir > 30
+  const isWarningTemp = data.tempAir > 32 || data.tempWater < 23.5 || data.tempWater > 24.5
   const isWarning = isWarningPh || isCriticalTds || isWarningTemp
   
   return (
