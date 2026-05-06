@@ -212,10 +212,10 @@ export default function DashboardPage() {
               <CardTitle>Trend Nutrisi (PPM) & pH</CardTitle>
               <CardDescription>Fluktuasi konsentrasi nutrisi dan pH dalam 7 hari terakhir.</CardDescription>
             </CardHeader>
-            <CardContent className="pl-0">
-              <div className="h-[250px] w-full mt-2">
+            <CardContent className="px-0 sm:px-6 pb-6">
+              <div className="h-[250px] w-full mt-2 min-w-0">
                 <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                  <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                     <defs>
                       <linearGradient id="colorNutrisi" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3}/>
@@ -223,15 +223,36 @@ export default function DashboardPage() {
                       </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b' }} dy={10} />
-                    <YAxis yAxisId="left" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b' }} dx={-10} domain={['auto', 'auto']} />
-                    <YAxis yAxisId="right" orientation="right" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b' }} dx={10} domain={[4, 8]} />
+                    <XAxis 
+                      dataKey="name" 
+                      axisLine={false} 
+                      tickLine={false} 
+                      tick={{ fontSize: 10, fill: '#64748b' }} 
+                      dy={10} 
+                    />
+                    <YAxis 
+                      yAxisId="left" 
+                      axisLine={false} 
+                      tickLine={false} 
+                      tick={{ fontSize: 10, fill: '#64748b' }} 
+                      dx={10}
+                      domain={['auto', 'auto']} 
+                    />
+                    <YAxis 
+                      yAxisId="right" 
+                      orientation="right" 
+                      axisLine={false} 
+                      tickLine={false} 
+                      tick={{ fontSize: 10, fill: '#64748b' }} 
+                      dx={-10}
+                      domain={[4, 8]} 
+                    />
                     <Tooltip 
                       contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
                     />
-                    <Legend verticalAlign="top" height={36}/>
-                    <Area yAxisId="left" type="monotone" dataKey="nutrisi" name="Nutrisi (PPM)" stroke="#8b5cf6" strokeWidth={2} fillOpacity={1} fill="url(#colorNutrisi)" />
-                    <Line yAxisId="right" type="monotone" dataKey="ph" name="pH Air" stroke="#3b82f6" strokeWidth={2} dot={{ r: 4 }} activeDot={{ r: 6 }} />
+                    <Legend verticalAlign="top" height={36} iconType="circle" wrapperStyle={{ fontSize: '12px' }} />
+                    <Area yAxisId="left" type="monotone" dataKey="nutrisi" name="Nutrisi" stroke="#8b5cf6" strokeWidth={2} fillOpacity={1} fill="url(#colorNutrisi)" />
+                    <Line yAxisId="right" type="monotone" dataKey="ph" name="pH" stroke="#3b82f6" strokeWidth={2} dot={{ r: 3 }} activeDot={{ r: 5 }} />
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
@@ -243,8 +264,8 @@ export default function DashboardPage() {
               <CardHeader>
                 <CardTitle className="text-base">Suhu Air (°C)</CardTitle>
               </CardHeader>
-              <CardContent className="pl-0">
-                <div className="h-[180px] w-full">
+              <CardContent className="px-0 sm:px-6 pb-6">
+                <div className="h-[180px] w-full min-w-0">
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={chartData} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
                       <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
@@ -262,8 +283,8 @@ export default function DashboardPage() {
               <CardHeader>
                 <CardTitle className="text-base">Intensitas Cahaya (kLux)</CardTitle>
               </CardHeader>
-              <CardContent className="pl-0">
-                <div className="h-[180px] w-full">
+              <CardContent className="px-0 sm:px-6 pb-6">
+                <div className="h-[180px] w-full min-w-0">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={chartData} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
                       <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
