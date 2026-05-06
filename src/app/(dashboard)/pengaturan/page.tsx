@@ -25,15 +25,15 @@ export default function SettingsPage() {
         {/* Navigasi Pengaturan */}
         <div className="lg:col-span-1 space-y-1">
           <Button 
-            variant={activeTab === "otomasi" ? "secondary" : "ghost"} 
+            variant={activeTab === "otomasi" ? "default" : "ghost"} 
             className={cn("w-full justify-start font-medium", activeTab !== "otomasi" && "text-muted-foreground")}
             onClick={() => setActiveTab("otomasi")}
           >
-            <Cpu className="mr-2 h-4 w-4 text-primary" />
-            <span className={activeTab === "otomasi" ? "text-primary font-bold" : ""}>Aturan Otomasi</span>
+            <Cpu className={cn("mr-2 h-4 w-4", activeTab === "otomasi" ? "" : "text-primary")} />
+            <span className={activeTab === "otomasi" ? "font-bold" : ""}>Aturan Otomasi</span>
           </Button>
           <Button 
-            variant={activeTab === "umum" ? "secondary" : "ghost"} 
+            variant={activeTab === "umum" ? "default" : "ghost"} 
             className={cn("w-full justify-start font-medium", activeTab !== "umum" && "text-muted-foreground")}
             onClick={() => setActiveTab("umum")}
           >
@@ -41,7 +41,7 @@ export default function SettingsPage() {
             Umum
           </Button>
           <Button 
-            variant={activeTab === "notifikasi" ? "secondary" : "ghost"} 
+            variant={activeTab === "notifikasi" ? "default" : "ghost"} 
             className={cn("w-full justify-start font-medium", activeTab !== "notifikasi" && "text-muted-foreground")}
             onClick={() => setActiveTab("notifikasi")}
           >
@@ -49,7 +49,7 @@ export default function SettingsPage() {
             Notifikasi
           </Button>
           <Button 
-            variant={activeTab === "keamanan" ? "secondary" : "ghost"} 
+            variant={activeTab === "keamanan" ? "default" : "ghost"} 
             className={cn("w-full justify-start font-medium", activeTab !== "keamanan" && "text-muted-foreground")}
             onClick={() => setActiveTab("keamanan")}
           >
@@ -57,7 +57,7 @@ export default function SettingsPage() {
             Keamanan
           </Button>
           <Button 
-            variant={activeTab === "penyimpanan" ? "secondary" : "ghost"} 
+            variant={activeTab === "penyimpanan" ? "default" : "ghost"} 
             className={cn("w-full justify-start font-medium", activeTab !== "penyimpanan" && "text-muted-foreground")}
             onClick={() => setActiveTab("penyimpanan")}
           >
@@ -65,7 +65,7 @@ export default function SettingsPage() {
             Penyimpanan Data
           </Button>
           <Button 
-            variant={activeTab === "integrasi" ? "secondary" : "ghost"} 
+            variant={activeTab === "integrasi" ? "default" : "ghost"} 
             className={cn("w-full justify-start font-medium", activeTab !== "integrasi" && "text-muted-foreground")}
             onClick={() => setActiveTab("integrasi")}
           >
