@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -23,30 +23,50 @@ export default function MonitoringPage() {
     lux: "12.5k"
   })
 
-  const refreshData = () => {
+  // Function to generate new data
+  const generateNewData = useCallback((quiet = false) => {
+    const newData = {
+      ph: Number((5.5 + Math.random() * 1.0).toFixed(1)), // 5.5 - 6.5
+      tds: Math.floor(600 + Math.random() * 150),       // 600 - 750
+      tempWater: Number((23.0 + Math.random() * 3.0).toFixed(1)), // 23 - 26
+      humidity: Math.floor(60 + Math.random() * 15),     // 60 - 75
+      tempAir: Number((26.0 + Math.random() * 5.0).toFixed(1)),   // 26 - 31
+      lux: (10 + Math.random() * 5).toFixed(1) + "k"     // 10 - 15k
+    }
+    setData(newData)
+    setLastUpdate("Just now")
+    if (!quiet) {
+      showToast("Data sensor diperbarui secara otomatis.", "info")
+    }
+  }, [showToast])
+
+  // Initial load randomization
+  useEffect(() => {
+    generateNewData(true)
+    
+    // Auto refresh every 10 seconds
+    const interval = setInterval(() => {
+      generateNewData(false)
+    }, 10000)
+    
+    return () => clearInterval(interval)
+  }, [generateNewData])
+
+  const handleManualRefresh = () => {
     setIsRefreshing(true)
     setTimeout(() => {
-      // Randomly tweak data slightly to look "live"
-      setData({
-        ph: Number((5.5 + Math.random() * 0.5).toFixed(1)),
-        tds: Math.floor(640 + Math.random() * 40),
-        tempWater: Number((24.0 + Math.random() * 1.0).toFixed(1)),
-        humidity: Math.floor(65 + Math.random() * 5),
-        tempAir: Number((27.5 + Math.random() * 1.5).toFixed(1)),
-        lux: (12 + Math.random()).toFixed(1) + "k"
-      })
+      generateNewData(true)
       setIsRefreshing(false)
-      setLastUpdate("1s ago")
       showToast("Data sensor diperbarui.", "success")
-    }, 1200)
+    }, 1000)
   }
 
   const sensors = [
-    { title: "Sensor pH Air", val: data.ph, unit: "pH", icon: FlaskConical, color: "primary", target: 6.0, max: 14, status: "Normal" },
-    { title: "Sensor Nutrisi (TDS)", val: data.tds, unit: "ppm", icon: Activity, color: "warning", target: 800, max: 1000, status: "Warning" },
+    { title: "Sensor pH Air", val: data.ph, unit: "pH", icon: FlaskConical, color: "primary", target: 6.0, max: 14, status: data.ph < 5.6 ? "Warning" : "Normal" },
+    { title: "Sensor Nutrisi (TDS)", val: data.tds, unit: "ppm", icon: Activity, color: "warning", target: 800, max: 1000, status: data.tds < 620 ? "Critical" : "Warning" },
     { title: "Suhu Air", val: data.tempWater, unit: "°C", icon: Thermometer, color: "info", target: 24.0, max: 40, status: "Optimal" },
     { title: "Kelembaban Udara", val: data.humidity, unit: "%", icon: Droplets, color: "primary", status: "Normal" },
-    { title: "Suhu Ruangan", val: data.tempAir, unit: "°C", icon: Wind, color: "primary", status: "Normal" },
+    { title: "Suhu Ruangan", val: data.tempAir, unit: "°C", icon: Wind, color: "primary", status: data.tempAir > 30 ? "Warning" : "Normal" },
     { title: "Intensitas Cahaya", val: data.lux, unit: "Lux", icon: Zap, color: "primary", status: "Normal" },
   ]
 
@@ -56,12 +76,12 @@ export default function MonitoringPage() {
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Monitoring Sensor</h1>
           <p className="text-sm text-muted-foreground mt-1">
-            Pantau data real-time dari semua sensor di fasilitas hidroponik.
+            Data diperbarui secara otomatis setiap 10 detik atau klik tombol refresh.
           </p>
         </div>
         <Button 
           variant="outline" 
-          onClick={refreshData} 
+          onClick={handleManualRefresh} 
           disabled={isRefreshing}
           className="gap-2"
         >
@@ -71,52 +91,59 @@ export default function MonitoringPage() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        <AnimatePresence mode="popLayout">
-          {sensors.map((sensor, i) => (
-            <motion.div
-              key={sensor.title}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.05 }}
-            >
-              <Card className={`border-l-4 border-l-${sensor.color} overflow-hidden h-full`}>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">{sensor.title}</CardTitle>
-                  <sensor.icon className="h-5 w-5 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="flex items-end gap-2 mb-2">
-                    <span className="text-4xl font-bold tracking-tighter">
+        {sensors.map((sensor, i) => (
+          <motion.div
+            key={sensor.title}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.05 }}
+          >
+            <Card className={`border-l-4 border-l-${sensor.color} overflow-hidden h-full shadow-sm hover:shadow-md transition-shadow`}>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">{sensor.title}</CardTitle>
+                <sensor.icon className={`h-5 w-5 text-muted-foreground ${isRefreshing ? 'animate-pulse' : ''}`} />
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-end gap-2 mb-2">
+                  <AnimatePresence mode="wait">
+                    <motion.span 
+                      key={sensor.val}
+                      initial={{ opacity: 0, y: -5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 5 }}
+                      className="text-4xl font-bold tracking-tighter"
+                    >
                       {isRefreshing ? "..." : sensor.val}
-                    </span>
-                    <span className="text-sm text-muted-foreground mb-1">{sensor.unit}</span>
-                  </div>
-                  <div className="flex items-center gap-2 mb-4">
-                    <Badge variant={sensor.status.toLowerCase() as any}>{sensor.status}</Badge>
-                    <span className="text-xs text-muted-foreground italic">Updated {lastUpdate}</span>
-                  </div>
-                  
-                  {sensor.target && (
-                    <>
-                      <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
-                        <motion.div 
-                          className={`h-full bg-${sensor.color}`} 
-                          initial={{ width: 0 }}
-                          animate={{ width: `${(Number(sensor.val) / sensor.max) * 100}%` }}
-                        />
-                      </div>
-                      <div className="flex justify-between text-[10px] text-muted-foreground mt-1 font-medium">
-                        <span>0</span>
-                        <span>Target: {sensor.target}</span>
-                        <span>{sensor.max}</span>
-                      </div>
-                    </>
-                  )}
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
-        </AnimatePresence>
+                    </motion.span>
+                  </AnimatePresence>
+                  <span className="text-sm text-muted-foreground mb-1">{sensor.unit}</span>
+                </div>
+                <div className="flex items-center gap-2 mb-4">
+                  <Badge variant={sensor.status.toLowerCase() as any}>{sensor.status}</Badge>
+                  <span className="text-xs text-muted-foreground italic">Updated {lastUpdate}</span>
+                </div>
+                
+                {sensor.target && (
+                  <>
+                    <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
+                      <motion.div 
+                        className={`h-full bg-${sensor.color}`} 
+                        initial={{ width: 0 }}
+                        animate={{ width: `${(Number(String(sensor.val).replace('k', '')) / sensor.max) * (sensor.val.toString().includes('k') ? 1000 : 100) / sensor.max * 100}%` }}
+                        style={{ width: `${(parseFloat(String(sensor.val)) / sensor.max) * 100}%` }}
+                      />
+                    </div>
+                    <div className="flex justify-between text-[10px] text-muted-foreground mt-1 font-medium">
+                      <span>0</span>
+                      <span>Target: {sensor.target}</span>
+                      <span>{sensor.max}</span>
+                    </div>
+                  </>
+                )}
+              </CardContent>
+            </Card>
+          </motion.div>
+        ))}
       </div>
     </div>
   )
