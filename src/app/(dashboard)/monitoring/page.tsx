@@ -20,7 +20,7 @@ export default function MonitoringPage() {
 
   const sensors = [
     { title: "Sensor pH Air", val: data.ph, unit: "pH", icon: FlaskConical, color: "primary", target: 6.0, max: 14, status: data.ph < 5.5 ? "Critical" : data.ph < 6.0 ? "Warning" : "Normal" },
-    { title: "Sensor Nutrisi (TDS)", val: data.tds, unit: "ppm", icon: Activity, color: "warning", target: 800, max: 1000, status: data.tds < 400 ? "Critical" : data.tds < 600 ? "Warning" : "Normal" },
+    { title: "Sensor Nutrisi (TDS)", val: data.tds, unit: "ppm", icon: Activity, color: "warning", target: 800, max: 1000, status: data.tds < 600 ? "Critical" : data.tds < 800 ? "Warning" : "Normal" },
     { title: "Suhu Air", val: data.tempWater, unit: "°C", icon: Thermometer, color: "info", target: 24.0, max: 40, status: (data.tempWater < 23.5 || data.tempWater > 24.5) ? "Warning" : "Optimal" },
     { title: "Kelembaban Udara", val: data.humidity, unit: "%", icon: Droplets, color: "primary", status: data.humidity < 40 ? "Warning" : "Normal" },
     { title: "Suhu Ruangan", val: data.tempAir, unit: "°C", icon: Wind, color: "primary", status: data.tempAir > 32 ? "Critical" : data.tempAir > 30 ? "Warning" : "Normal" },

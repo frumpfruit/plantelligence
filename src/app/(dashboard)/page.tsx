@@ -46,9 +46,9 @@ export default function DashboardPage() {
 
   // Determine system status based on sensors
   const isWarningPh = data.ph < 6.0
-  const isCriticalTds = data.tds < 500
+  const isWarningTds = data.tds < 800
   const isWarningTemp = data.tempAir > 32 || data.tempWater < 23.5 || data.tempWater > 24.5
-  const isWarning = isWarningPh || isCriticalTds || isWarningTemp
+  const isWarning = isWarningPh || isWarningTds || isWarningTemp
   
   return (
     <div className="space-y-6">
@@ -101,7 +101,7 @@ export default function DashboardPage() {
               "text-xs mt-1 font-medium",
               isWarningPh ? "text-warning" : "text-muted-foreground font-normal"
             )}>
-              {isWarningPh ? "Terlalu Rendah!" : "Ideal (5.5 - 6.5)"}
+              {isWarningPh ? "Terlalu Rendah!" : "Ideal (6.0 - 7.5)"}
             </p>
           </CardContent>
         </Card>
@@ -109,13 +109,13 @@ export default function DashboardPage() {
         {/* TDS Card */}
         <Card className={cn(
           "hover:shadow-md transition-all duration-500 border-2",
-          isCriticalTds ? "border-destructive bg-destructive/5 shadow-destructive/5" : "hover:border-purple-200"
+          isWarningTds ? "border-warning bg-warning/5 shadow-warning/5" : "hover:border-purple-200"
         )}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Nutrisi (TDS)</CardTitle>
             <Activity className={cn(
               "h-4 w-4 transition-all",
-              isCriticalTds ? "text-destructive animate-bounce" : "text-purple-500"
+              isWarningTds ? "text-warning animate-pulse" : "text-purple-500"
             )} />
           </CardHeader>
           <CardContent>
@@ -134,9 +134,9 @@ export default function DashboardPage() {
             </div>
             <p className={cn(
               "text-xs mt-1 font-medium",
-              isCriticalTds ? "text-destructive" : "text-emerald-500"
+              isWarningTds ? "text-warning" : "text-emerald-500 font-normal"
             )}>
-              {isCriticalTds ? "Perlu Tambah Nutrisi" : "Stabil"}
+              {isWarningTds ? "Kurang Nutrisi!" : "Ideal (800 - 1000)"}
             </p>
           </CardContent>
         </Card>
