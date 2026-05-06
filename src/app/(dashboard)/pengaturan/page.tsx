@@ -1,15 +1,83 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useTransition } from "react"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Switch } from "@/components/ui/switch"
-import { Save, Bell, Shield, Globe, Database, Smartphone, Key, Download, Cpu } from "lucide-react"
+import { Save, Bell, Shield, Globe, Database, Smartphone, Key, Download, Cpu, Loader2, RefreshCw } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { useToast } from "@/components/ToastProvider"
+
+// A reusable fake-save button
+function SaveButton({ label = "Simpan Perubahan", section = "" }: { label?: string; section?: string }) {
+  const [isPending, startTransition] = useTransition()
+  const { showToast } = useToast()
+
+  const handleSave = () => {
+    startTransition(async () => {
+      await new Promise(r => setTimeout(r, 1500))
+      showToast(`${section ? section + ": " : ""}Perubahan berhasil disimpan!`, "success")
+    })
+  }
+
+  return (
+    <Button onClick={handleSave} disabled={isPending} className="w-full sm:w-auto">
+      {isPending ? (
+        <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Menyimpan...</>
+      ) : (
+        <><Save className="mr-2 h-4 w-4" />{label}</>
+      )}
+    </Button>
+  )
+}
+
+// A stateful switch row
+function SwitchRow({ label, description, defaultChecked = false, onToggle }: {
+  label: string, description: string, defaultChecked?: boolean, onToggle?: (v: boolean) => void
+}) {
+  const [checked, setChecked] = useState(defaultChecked)
+  const { showToast } = useToast()
+
+  const handleChange = (val: boolean) => {
+    setChecked(val)
+    showToast(`${label} ${val ? "diaktifkan" : "dinonaktifkan"}.`, val ? "success" : "info")
+    onToggle?.(val)
+  }
+
+  return (
+    <div className="flex items-center justify-between space-x-2">
+      <div className="flex flex-col space-y-1">
+        <span className="text-sm font-medium">{label}</span>
+        <span className="text-xs text-muted-foreground">{description}</span>
+      </div>
+      <Switch checked={checked} onCheckedChange={handleChange} />
+    </div>
+  )
+}
 
 export default function SettingsPage() {
-  const [activeTab, setActiveTab] = useState("otomasi") // Set default ke otomasi agar user langsung lihat
+  const [activeTab, setActiveTab] = useState("otomasi")
+  const { showToast } = useToast()
+
+  const tabs = [
+    { id: "otomasi", label: "Aturan Otomasi", icon: Cpu },
+    { id: "umum", label: "Umum", icon: Globe },
+    { id: "notifikasi", label: "Notifikasi", icon: Bell },
+    { id: "keamanan", label: "Keamanan", icon: Shield },
+    { id: "penyimpanan", label: "Penyimpanan Data", icon: Database },
+    { id: "integrasi", label: "Integrasi Perangkat", icon: Smartphone },
+  ]
+
+  const handleExport = (type: string) => {
+    showToast(`Memulai ekspor data ke format ${type}...`, "info")
+    setTimeout(() => showToast(`Data berhasil diekspor ke ${type}!`, "success"), 2000)
+  }
+
+  const handleRegenApiKey = () => {
+    showToast("API Key baru sedang digenerate...", "info")
+    setTimeout(() => showToast("API Key baru berhasil dibuat. Simpan sekarang!", "warning"), 2000)
+  }
 
   return (
     <div className="space-y-6">
@@ -21,63 +89,25 @@ export default function SettingsPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        
         {/* Navigasi Pengaturan */}
         <div className="lg:col-span-1 space-y-1">
-          <Button 
-            variant={activeTab === "otomasi" ? "default" : "ghost"} 
-            className={cn("w-full justify-start font-medium", activeTab !== "otomasi" && "text-muted-foreground")}
-            onClick={() => setActiveTab("otomasi")}
-          >
-            <Cpu className={cn("mr-2 h-4 w-4", activeTab === "otomasi" ? "" : "text-primary")} />
-            <span className={activeTab === "otomasi" ? "font-bold" : ""}>Aturan Otomasi</span>
-          </Button>
-          <Button 
-            variant={activeTab === "umum" ? "default" : "ghost"} 
-            className={cn("w-full justify-start font-medium", activeTab !== "umum" && "text-muted-foreground")}
-            onClick={() => setActiveTab("umum")}
-          >
-            <Globe className="mr-2 h-4 w-4" />
-            Umum
-          </Button>
-          <Button 
-            variant={activeTab === "notifikasi" ? "default" : "ghost"} 
-            className={cn("w-full justify-start font-medium", activeTab !== "notifikasi" && "text-muted-foreground")}
-            onClick={() => setActiveTab("notifikasi")}
-          >
-            <Bell className="mr-2 h-4 w-4" />
-            Notifikasi
-          </Button>
-          <Button 
-            variant={activeTab === "keamanan" ? "default" : "ghost"} 
-            className={cn("w-full justify-start font-medium", activeTab !== "keamanan" && "text-muted-foreground")}
-            onClick={() => setActiveTab("keamanan")}
-          >
-            <Shield className="mr-2 h-4 w-4" />
-            Keamanan
-          </Button>
-          <Button 
-            variant={activeTab === "penyimpanan" ? "default" : "ghost"} 
-            className={cn("w-full justify-start font-medium", activeTab !== "penyimpanan" && "text-muted-foreground")}
-            onClick={() => setActiveTab("penyimpanan")}
-          >
-            <Database className="mr-2 h-4 w-4" />
-            Penyimpanan Data
-          </Button>
-          <Button 
-            variant={activeTab === "integrasi" ? "default" : "ghost"} 
-            className={cn("w-full justify-start font-medium", activeTab !== "integrasi" && "text-muted-foreground")}
-            onClick={() => setActiveTab("integrasi")}
-          >
-            <Smartphone className="mr-2 h-4 w-4" />
-            Integrasi Perangkat
-          </Button>
+          {tabs.map(tab => (
+            <Button
+              key={tab.id}
+              variant={activeTab === tab.id ? "default" : "ghost"}
+              className={cn("w-full justify-start font-medium", activeTab !== tab.id && "text-muted-foreground")}
+              onClick={() => setActiveTab(tab.id)}
+            >
+              <tab.icon className={cn("mr-2 h-4 w-4", activeTab === tab.id ? "" : "text-primary")} />
+              <span className={activeTab === tab.id ? "font-bold" : ""}>{tab.label}</span>
+            </Button>
+          ))}
         </div>
 
         {/* Konten Pengaturan */}
         <div className="lg:col-span-3 space-y-6">
-          
-          {/* TAB OTOMASI (BARU) */}
+
+          {/* TAB OTOMASI */}
           {activeTab === "otomasi" && (
             <div className="space-y-6">
               <div className="bg-primary/10 border border-primary/20 p-4 rounded-lg flex items-start gap-3">
@@ -90,7 +120,6 @@ export default function SettingsPage() {
                 </div>
               </div>
 
-              {/* Pompa Air */}
               <Card>
                 <CardHeader>
                   <CardTitle className="text-base">1. Sirkulasi Pompa Air Utama</CardTitle>
@@ -121,7 +150,6 @@ export default function SettingsPage() {
                 </CardContent>
               </Card>
 
-              {/* Dosing Nutrisi */}
               <Card>
                 <CardHeader>
                   <CardTitle className="text-base">2. Injeksi Nutrisi (A & B)</CardTitle>
@@ -149,7 +177,6 @@ export default function SettingsPage() {
                 </CardContent>
               </Card>
 
-              {/* Regulasi pH */}
               <Card>
                 <CardHeader>
                   <CardTitle className="text-base">3. Kestabilan pH Air</CardTitle>
@@ -160,18 +187,17 @@ export default function SettingsPage() {
                     <div className="space-y-3">
                       <label className="text-sm font-semibold text-rose-600 uppercase tracking-wider">Batas Maksimal pH (Terlalu Basa)</label>
                       <Input type="number" step="0.1" defaultValue="6.5" className="h-11" />
-                      <p className="text-xs text-muted-foreground">Jika sensor pH &gt; 6.5, pompa <strong>pH Down</strong> akan menyala sedikit demi sedikit.</p>
+                      <p className="text-xs text-muted-foreground">Jika sensor pH &gt; 6.5, pompa <strong>pH Down</strong> akan menyala.</p>
                     </div>
                     <div className="space-y-3">
                       <label className="text-sm font-semibold text-blue-600 uppercase tracking-wider">Batas Minimal pH (Terlalu Asam)</label>
                       <Input type="number" step="0.1" defaultValue="5.5" className="h-11" />
-                      <p className="text-xs text-muted-foreground">Jika sensor pH &lt; 5.5, pompa <strong>pH Up</strong> akan menyala sedikit demi sedikit.</p>
+                      <p className="text-xs text-muted-foreground">Jika sensor pH &lt; 5.5, pompa <strong>pH Up</strong> akan menyala.</p>
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
-              {/* Grow Light */}
               <Card>
                 <CardHeader>
                   <CardTitle className="text-base">4. Jadwal Pencahayaan (Grow Light)</CardTitle>
@@ -188,19 +214,16 @@ export default function SettingsPage() {
                       <Input type="time" defaultValue="18:00" className="w-full h-11 px-3" />
                     </div>
                   </div>
-                  <div className="flex items-center justify-between mt-4 p-3 bg-muted/50 rounded border">
-                    <div className="flex flex-col space-y-1">
-                      <span className="text-sm font-medium">Auto-Redup Berdasarkan Sinar Matahari</span>
-                      <span className="text-xs text-muted-foreground">Jika farm memiliki atap tembus pandang, lampu akan mati jika cahaya matahari sudah cukup terang.</span>
-                    </div>
-                    <Switch defaultChecked />
+                  <div className="mt-4">
+                    <SwitchRow
+                      label="Auto-Redup Berdasarkan Sinar Matahari"
+                      description="Jika farm memiliki atap tembus pandang, lampu akan mati jika cahaya matahari sudah cukup terang."
+                      defaultChecked
+                    />
                   </div>
                 </CardContent>
                 <CardFooter className="flex flex-col sm:flex-row justify-center sm:justify-end border-t p-6 gap-3">
-                  <Button size="lg" className="w-full sm:w-auto bg-primary hover:bg-primary/90">
-                    <Save className="mr-2 h-4 w-4" />
-                    Simpan Seluruh Parameter Otomasi
-                  </Button>
+                  <SaveButton label="Simpan Seluruh Parameter Otomasi" section="Otomasi" />
                 </CardFooter>
               </Card>
             </div>
@@ -212,20 +235,17 @@ export default function SettingsPage() {
               <Card>
                 <CardHeader>
                   <CardTitle>Pengaturan Umum</CardTitle>
-                  <CardDescription>
-                    Konfigurasi dasar untuk aplikasi Plantelligence Anda.
-                  </CardDescription>
+                  <CardDescription>Konfigurasi dasar untuk aplikasi Plantelligence Anda.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Nama Pertanian / Proyek</label>
                     <Input defaultValue="Kebun Sayur Lembang" />
                   </div>
-                  
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <label className="text-sm font-medium">Zona Waktu</label>
-                      <select className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
+                      <select className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
                         <option value="asia/jakarta">Asia/Jakarta (WIB)</option>
                         <option value="asia/makassar">Asia/Makassar (WITA)</option>
                         <option value="asia/jayapura">Asia/Jayapura (WIT)</option>
@@ -233,27 +253,23 @@ export default function SettingsPage() {
                     </div>
                     <div className="space-y-2">
                       <label className="text-sm font-medium">Format Tanggal</label>
-                      <select className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
+                      <select className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
                         <option value="dd/mm/yyyy">DD/MM/YYYY</option>
                         <option value="mm/dd/yyyy">MM/DD/YYYY</option>
                         <option value="yyyy-mm-dd">YYYY-MM-DD</option>
                       </select>
                     </div>
                   </div>
-
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Bahasa Antarmuka</label>
-                    <select className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
+                    <select className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
                       <option value="id">Bahasa Indonesia</option>
                       <option value="en">English</option>
                     </select>
                   </div>
                 </CardContent>
-                <CardFooter className="flex flex-col sm:flex-row justify-center sm:justify-end border-t p-6 gap-3">
-                  <Button className="w-full sm:w-auto">
-                    <Save className="mr-2 h-4 w-4" />
-                    Simpan Perubahan
-                  </Button>
+                <CardFooter className="flex justify-end border-t p-6">
+                  <SaveButton section="Pengaturan Umum" />
                 </CardFooter>
               </Card>
             </div>
@@ -264,40 +280,23 @@ export default function SettingsPage() {
             <Card>
               <CardHeader>
                 <CardTitle>Preferensi Notifikasi</CardTitle>
-                <CardDescription>
-                  Pilih peringatan apa yang ingin Anda terima dan bagaimana caranya.
-                </CardDescription>
+                <CardDescription>Pilih peringatan apa yang ingin Anda terima dan bagaimana caranya.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
-                <div className="flex items-center justify-between space-x-2">
-                  <div className="flex flex-col space-y-1">
-                    <span className="text-sm font-medium">Peringatan Suhu Ekstrem</span>
-                    <span className="text-xs text-muted-foreground">Kirimkan notifikasi jika suhu di luar batas normal.</span>
-                  </div>
-                  <Switch defaultChecked id="temp-alerts" />
+                <SwitchRow label="Peringatan Suhu Ekstrem" description="Kirimkan notifikasi jika suhu di luar batas normal." defaultChecked />
+                <div className="border-t pt-4">
+                  <SwitchRow label="Status Kelembapan Tanah" description="Peringatan otomatis saat tanah perlu disiram." defaultChecked />
                 </div>
-                <div className="flex items-center justify-between space-x-2 border-t pt-4">
-                  <div className="flex flex-col space-y-1">
-                    <span className="text-sm font-medium">Status Kelembapan Tanah</span>
-                    <span className="text-xs text-muted-foreground">Peringatan otomatis saat tanah perlu disiram.</span>
-                  </div>
-                  <Switch defaultChecked id="soil-alerts" />
+                <div className="border-t pt-4">
+                  <SwitchRow label="Laporan Mingguan" description="Kirimkan ringkasan performa kebun setiap minggu via Email." defaultChecked />
                 </div>
-                <div className="flex items-center justify-between space-x-2 border-t pt-4">
-                  <div className="flex flex-col space-y-1">
-                    <span className="text-sm font-medium">Laporan Mingguan</span>
-                    <span className="text-xs text-muted-foreground">Kirimkan ringkasan performa kebun setiap minggu via Email.</span>
-                  </div>
-                  <Switch defaultChecked id="weekly-reports" />
-                </div>
-                <div className="flex items-center justify-between space-x-2 border-t pt-4">
-                  <div className="flex flex-col space-y-1">
-                    <span className="text-sm font-medium">Notifikasi SMS</span>
-                    <span className="text-xs text-muted-foreground">Kirimkan peringatan kritis via SMS ke nomor yang terdaftar.</span>
-                  </div>
-                  <Switch id="sms-alerts" />
+                <div className="border-t pt-4">
+                  <SwitchRow label="Notifikasi SMS" description="Kirimkan peringatan kritis via SMS ke nomor yang terdaftar." />
                 </div>
               </CardContent>
+              <CardFooter className="flex justify-end border-t p-6">
+                <SaveButton section="Notifikasi" />
+              </CardFooter>
             </Card>
           )}
 
@@ -309,25 +308,18 @@ export default function SettingsPage() {
                 <CardDescription>Kelola pengaturan keamanan tingkat lanjut dan sesi aktif.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
-                <div className="flex items-center justify-between space-x-2">
-                  <div className="flex flex-col space-y-1">
-                    <span className="text-sm font-medium">Autentikasi Dua Faktor (2FA)</span>
-                    <span className="text-xs text-muted-foreground">Tingkatkan keamanan akun Anda dengan verifikasi dua langkah.</span>
-                  </div>
-                  <Switch id="2fa-toggle" />
-                </div>
-                <div className="flex items-center justify-between space-x-2 pt-4 border-t">
-                  <div className="flex flex-col space-y-1">
-                    <span className="text-sm font-medium">Paksa Logout Setelah Inaktif</span>
-                    <span className="text-xs text-muted-foreground">Otomatis mengeluarkan pengguna setelah 30 menit tidak aktif.</span>
-                  </div>
-                  <Switch defaultChecked id="auto-logout" />
+                <SwitchRow label="Autentikasi Dua Faktor (2FA)" description="Tingkatkan keamanan akun Anda dengan verifikasi dua langkah." />
+                <div className="border-t pt-4">
+                  <SwitchRow label="Paksa Logout Setelah Inaktif" description="Otomatis mengeluarkan pengguna setelah 30 menit tidak aktif." defaultChecked />
                 </div>
               </CardContent>
+              <CardFooter className="flex justify-end border-t p-6">
+                <SaveButton section="Keamanan" />
+              </CardFooter>
             </Card>
           )}
 
-          {/* TAB PENYIMPANAN DATA */}
+          {/* TAB PENYIMPANAN */}
           {activeTab === "penyimpanan" && (
             <Card>
               <CardHeader>
@@ -337,26 +329,32 @@ export default function SettingsPage() {
               <CardContent className="space-y-6">
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Periode Retensi Data Sensor</label>
-                  <select className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
+                  <select className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
                     <option value="30">30 Hari (Default)</option>
                     <option value="90">90 Hari</option>
                     <option value="365">1 Tahun</option>
                   </select>
                   <p className="text-xs text-muted-foreground">Data lebih lama dari periode ini akan diarsipkan secara otomatis.</p>
                 </div>
-
                 <div className="pt-4 border-t space-y-4">
                   <h4 className="text-sm font-medium">Export Data Log</h4>
                   <div className="flex gap-2">
-                    <Button variant="outline"><Download className="mr-2 h-4 w-4" /> Export CSV</Button>
-                    <Button variant="outline"><Download className="mr-2 h-4 w-4" /> Export PDF</Button>
+                    <Button variant="outline" onClick={() => handleExport("CSV")}>
+                      <Download className="mr-2 h-4 w-4" /> Export CSV
+                    </Button>
+                    <Button variant="outline" onClick={() => handleExport("PDF")}>
+                      <Download className="mr-2 h-4 w-4" /> Export PDF
+                    </Button>
                   </div>
                 </div>
               </CardContent>
+              <CardFooter className="flex justify-end border-t p-6">
+                <SaveButton section="Penyimpanan" />
+              </CardFooter>
             </Card>
           )}
 
-          {/* TAB INTEGRASI PERANGKAT */}
+          {/* TAB INTEGRASI */}
           {activeTab === "integrasi" && (
             <Card>
               <CardHeader>
@@ -371,27 +369,24 @@ export default function SettingsPage() {
                     <span className="text-sm font-medium">Terhubung (Ping: 24ms)</span>
                   </div>
                 </div>
-
                 <div className="pt-4 border-t space-y-2">
                   <label className="text-sm font-medium">API Key (Read/Write)</label>
                   <div className="flex gap-2">
                     <Input type="password" defaultValue="pk_live_51HXXXXXXXXXXXXX" readOnly />
-                    <Button variant="secondary"><Key className="mr-2 h-4 w-4" /> Regenerate</Button>
+                    <Button variant="secondary" onClick={handleRegenApiKey}>
+                      <RefreshCw className="mr-2 h-4 w-4" /> Regenerate
+                    </Button>
                   </div>
                   <p className="text-xs text-muted-foreground">Gunakan kunci ini untuk mengirim data dari custom microcontroller (Arduino/ESP32).</p>
                 </div>
-
                 <div className="pt-4 border-t space-y-2">
                   <label className="text-sm font-medium">Webhook URL Event Alert</label>
                   <Input defaultValue="https://my-domain.com/webhook/plantelligence" />
                   <p className="text-xs text-muted-foreground">Sistem akan melakukan HTTP POST ke URL ini saat ada alert kritis.</p>
                 </div>
               </CardContent>
-              <CardFooter className="flex flex-col sm:flex-row justify-center sm:justify-end border-t p-6 gap-3">
-                <Button className="w-full sm:w-auto">
-                  <Save className="mr-2 h-4 w-4" />
-                  Simpan Konfigurasi Integrasi
-                </Button>
+              <CardFooter className="flex justify-end border-t p-6">
+                <SaveButton label="Simpan Konfigurasi Integrasi" section="Integrasi" />
               </CardFooter>
             </Card>
           )}
