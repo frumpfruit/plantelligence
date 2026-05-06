@@ -1,64 +1,20 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Droplets, Thermometer, Activity, FlaskConical, Wind, Zap, RefreshCw, Loader2 } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { useToast } from "@/components/ToastProvider"
+import { useSensors } from "@/components/SensorProvider"
 
 export default function MonitoringPage() {
-  const [isRefreshing, setIsRefreshing] = useState(false)
+  const { data, isRefreshing, refreshData, lastUpdate } = useSensors()
   const { showToast } = useToast()
-  const [lastUpdate, setLastUpdate] = useState("Just now")
-  
-  // Fake sensor data that can "change"
-  const [data, setData] = useState({
-    ph: 5.8,
-    tds: 650,
-    tempWater: 24.6,
-    humidity: 68,
-    tempAir: 28.2,
-    lux: "12.5k"
-  })
-
-  // Function to generate new data
-  const generateNewData = useCallback((quiet = false) => {
-    const newData = {
-      ph: Number((5.5 + Math.random() * 1.0).toFixed(1)), // 5.5 - 6.5
-      tds: Math.floor(600 + Math.random() * 150),       // 600 - 750
-      tempWater: Number((23.0 + Math.random() * 3.0).toFixed(1)), // 23 - 26
-      humidity: Math.floor(60 + Math.random() * 15),     // 60 - 75
-      tempAir: Number((26.0 + Math.random() * 5.0).toFixed(1)),   // 26 - 31
-      lux: (10 + Math.random() * 5).toFixed(1) + "k"     // 10 - 15k
-    }
-    setData(newData)
-    setLastUpdate("Just now")
-    if (!quiet) {
-      showToast("Data sensor diperbarui secara otomatis.", "info")
-    }
-  }, [showToast])
-
-  // Initial load randomization
-  useEffect(() => {
-    generateNewData(true)
-    
-    // Auto refresh every 10 seconds
-    const interval = setInterval(() => {
-      generateNewData(false)
-    }, 10000)
-    
-    return () => clearInterval(interval)
-  }, [generateNewData])
 
   const handleManualRefresh = () => {
-    setIsRefreshing(true)
-    setTimeout(() => {
-      generateNewData(true)
-      setIsRefreshing(false)
-      showToast("Data sensor diperbarui.", "success")
-    }, 1000)
+    refreshData(false)
+    showToast("Memperbarui data sensor...", "info")
   }
 
   const sensors = [
@@ -76,7 +32,7 @@ export default function MonitoringPage() {
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Monitoring Sensor</h1>
           <p className="text-sm text-muted-foreground mt-1">
-            Data diperbarui secara otomatis setiap 10 detik atau klik tombol refresh.
+            Data disinkronkan secara global dengan Dashboard Utama.
           </p>
         </div>
         <Button 
@@ -129,8 +85,7 @@ export default function MonitoringPage() {
                       <motion.div 
                         className={`h-full bg-${sensor.color}`} 
                         initial={{ width: 0 }}
-                        animate={{ width: `${(Number(String(sensor.val).replace('k', '')) / sensor.max) * (sensor.val.toString().includes('k') ? 1000 : 100) / sensor.max * 100}%` }}
-                        style={{ width: `${(parseFloat(String(sensor.val)) / sensor.max) * 100}%` }}
+                        animate={{ width: `${(parseFloat(String(sensor.val)) / sensor.max) * 100}%` }}
                       />
                     </div>
                     <div className="flex justify-between text-[10px] text-muted-foreground mt-1 font-medium">
