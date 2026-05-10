@@ -33,6 +33,7 @@ interface SensorContextType {
   markAllAsRead: () => void
   deleteNotification: (id: string) => void
   toggleHandled: (id: string) => void
+  applyManualAction: (type: "ph-up" | "ph-down" | "tds", amount: number) => void
 }
 
 const SensorContext = createContext<SensorContextType | undefined>(undefined)
@@ -84,7 +85,32 @@ export function SensorProvider({ children }: { children: ReactNode }) {
     setNotifications(prev => prev.map(n => n.id === id ? { ...n, handled: !n.handled } : n))
   }, [])
 
+  const applyManualAction = useCallback((type: "ph-up" | "ph-down" | "tds", amount: number) => {
+    setData(prev => {
+      const next = { ...prev }
+      if (type === "ph-up") next.ph = Number((next.ph + 0.4).toFixed(1))
+      if (type === "ph-down") next.ph = Number((next.ph - 0.4).toFixed(1))
+      if (type === "tds") next.tds = next.tds + 120
+      return next
+    })
+
+    // Auto-handle related notifications
+    setNotifications(prev => prev.map(n => {
+      const isRelated = 
+        (type.includes("ph") && n.title.toLowerCase().includes("ph")) ||
+        (type === "tds" && n.title.toLowerCase().includes("nutrisi"))
+      
+      if (isRelated && !n.handled) {
+        return { ...n, handled: true }
+      }
+      return n
+    }))
+
+    setLastUpdate("Just now (Manual Action)")
+  }, [])
+
   const generateNewData = useCallback(() => {
+    // ...
     const newData = {
       ph: Number((5.5 + Math.random() * 1.5).toFixed(1)), // 5.5 - 7.0
       tds: Math.floor(500 + Math.random() * 500),       // 500 - 1000
@@ -143,7 +169,8 @@ export function SensorProvider({ children }: { children: ReactNode }) {
       addNotification, 
       markAllAsRead, 
       deleteNotification,
-      toggleHandled
+      toggleHandled,
+      applyManualAction
     }}>
       {children}
     </SensorContext.Provider>

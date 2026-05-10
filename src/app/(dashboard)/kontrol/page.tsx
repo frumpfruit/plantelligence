@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Droplets, Lightbulb, RefreshCcw, ShieldAlert, Play, Square, ArrowUp, ArrowDown, Loader2 } from "lucide-react"
 import { motion } from "framer-motion"
 import { useToast } from "@/components/ToastProvider"
+import { useSensors } from "@/components/SensorProvider"
 
 type ModuleStatus = "on" | "off" | "loading"
 
@@ -44,6 +45,7 @@ export default function ControlPage() {
   const [isAutoMode, setIsAutoMode] = useState(true)
   const [modules, setModules] = useState<Module[]>(initialModules)
   const [lightIntensity, setLightIntensity] = useState(100)
+  const { applyManualAction } = useSensors()
   
   const [dosageAmounts, setDosageAmounts] = useState<Record<string, number>>({
     "nutrisi-a": 50,
@@ -77,6 +79,12 @@ export default function ControlPage() {
       const now = new Date()
       const timeStr = now.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })
       const mod = modules.find(m => m.id === moduleId)
+      
+      // SYNC: Apply the action to the sensors and notifications
+      if (moduleId === "ph-up") applyManualAction("ph-up", dose)
+      if (moduleId === "ph-down") applyManualAction("ph-down", dose)
+      if (moduleId.includes("nutrisi")) applyManualAction("tds", dose)
+
       setModules(prev => prev.map(m =>
         m.id === moduleId ? { ...m, status: "off", lastAction: `Dosing ${dose}ml selesai jam ${timeStr}` } : m
       ))
