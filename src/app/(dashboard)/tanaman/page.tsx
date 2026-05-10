@@ -13,8 +13,9 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Card, CardContent } from "@/components/ui/card"
-import { Plus, Search, Edit2, Trash2, X, Settings2 } from "lucide-react"
+import { Plus, Search, Edit2, Trash2, X, Settings2, Eye } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
+import Link from "next/link"
 
 // Initial mock data
 const initialPlants = [
@@ -208,7 +209,12 @@ export default function PlantListPage() {
                           <Badge variant="warning">Warning</Badge>
                         )}
                       </TableCell>
-                      <TableCell className="text-right whitespace-nowrap space-x-2">
+                      <TableCell className="text-right whitespace-nowrap space-x-1">
+                        <Link href={`/tanaman/${plant.id}`}>
+                          <Button variant="ghost" size="icon" title="Lihat Detail">
+                            <Search className="h-4 w-4 text-info" />
+                          </Button>
+                        </Link>
                         <Button variant="ghost" size="icon" onClick={() => handleOpenEdit(plant)}>
                           <Edit2 className="h-4 w-4 text-primary" />
                         </Button>

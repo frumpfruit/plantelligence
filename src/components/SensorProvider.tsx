@@ -1,6 +1,17 @@
 "use client"
 
 import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from "react"
+import { AlertCircle, AlertTriangle, Info } from "lucide-react"
+
+export interface Notification {
+  id: string
+  type: "critical" | "warning" | "info" | "success"
+  title: string
+  message: string
+  time: string
+  read: boolean
+  plantId?: string
+}
 
 interface SensorData {
   ph: number
@@ -16,6 +27,10 @@ interface SensorContextType {
   isRefreshing: boolean
   refreshData: (quiet?: boolean) => void
   lastUpdate: string
+  notifications: Notification[]
+  addNotification: (notif: Omit<Notification, "id" | "time" | "read">) => void
+  markAllAsRead: () => void
+  deleteNotification: (id: string) => void
 }
 
 const SensorContext = createContext<SensorContextType | undefined>(undefined)
@@ -23,6 +38,17 @@ const SensorContext = createContext<SensorContextType | undefined>(undefined)
 export function SensorProvider({ children }: { children: ReactNode }) {
   const [isRefreshing, setIsRefreshing] = useState(false)
   const [lastUpdate, setLastUpdate] = useState("Just now")
+  const [notifications, setNotifications] = useState<Notification[]>([
+    {
+      id: "1",
+      type: "critical",
+      title: "pH air terlalu rendah (4.9)",
+      message: "Segera lakukan penyesuaian pH untuk mencegah akar tanaman rusak.",
+      time: "10 menit yang lalu",
+      read: false,
+      plantId: "1"
+    }
+  ])
   const [data, setData] = useState<SensorData>({
     ph: 5.8,
     tds: 650,
@@ -32,40 +58,84 @@ export function SensorProvider({ children }: { children: ReactNode }) {
     lux: "12.5k"
   })
 
+  const addNotification = useCallback((notif: Omit<Notification, "id" | "time" | "read">) => {
+    const newNotif: Notification = {
+      ...notif,
+      id: Math.random().toString(36).substr(2, 9),
+      time: "Baru saja",
+      read: false
+    }
+    setNotifications(prev => [newNotif, ...prev])
+  }, [])
+
+  const markAllAsRead = useCallback(() => {
+    setNotifications(prev => prev.map(n => ({ ...n, read: true })))
+  }, [])
+
+  const deleteNotification = useCallback((id: string) => {
+    setNotifications(prev => prev.filter(n => n.id !== id))
+  }, [])
+
   const generateNewData = useCallback(() => {
     const newData = {
-      ph: Number((5.8 + Math.random() * 0.5).toFixed(1)), // 5.8 - 6.3
-      tds: Math.floor(750 + Math.random() * 100),       // 750 - 850
-      tempWater: Number((23.8 + Math.random() * 0.5).toFixed(1)), // 23.8 - 24.3 (Near 24)
-      humidity: Math.floor(65 + Math.random() * 10),
-      tempAir: Number((28.0 + Math.random() * 3.0).toFixed(1)),
-      lux: (12 + Math.random() * 2).toFixed(1) + "k"
+      ph: Number((5.5 + Math.random() * 1.5).toFixed(1)), // 5.5 - 7.0
+      tds: Math.floor(500 + Math.random() * 500),       // 500 - 1000
+      tempWater: Number((22.0 + Math.random() * 4.0).toFixed(1)), // 22 - 26
+      humidity: Math.floor(40 + Math.random() * 40),
+      tempAir: Number((25.0 + Math.random() * 10.0).toFixed(1)),
+      lux: (Math.floor(2 + Math.random() * 15)).toFixed(1) + "k"
     }
+    
+    // Check for critical values to trigger auto-notifications
+    if (newData.ph < 5.6) {
+      addNotification({
+        type: "critical",
+        title: "Kadar pH di bawah batas!",
+        message: `Tanaman Selada terdeteksi pH ${newData.ph}, segera naikkan kadar pH.`,
+        plantId: "1"
+      })
+    }
+    
+    if (newData.tds < 600) {
+      addNotification({
+        type: "warning",
+        title: "Nutrisi (TDS) Turun",
+        message: `Kadar nutrisi tanaman Selada turun di bawah batas minimum (${newData.tds} ppm)!`,
+        plantId: "1"
+      })
+    }
+
     setData(newData)
     setLastUpdate("Just now")
-  }, [])
+  }, [addNotification])
 
   const refreshData = useCallback((quiet = false) => {
     if (!quiet) setIsRefreshing(true)
     
-    // Simulate delay
     setTimeout(() => {
       generateNewData()
       if (!quiet) setIsRefreshing(false)
     }, quiet ? 0 : 1200)
   }, [generateNewData])
 
-  // Initial randomization and auto-refresh
   useEffect(() => {
-    generateNewData()
     const interval = setInterval(() => {
       refreshData(true)
-    }, 10000)
+    }, 15000) // Auto refresh every 15s
     return () => clearInterval(interval)
-  }, [generateNewData, refreshData])
+  }, [refreshData])
 
   return (
-    <SensorContext.Provider value={{ data, isRefreshing, refreshData, lastUpdate }}>
+    <SensorContext.Provider value={{ 
+      data, 
+      isRefreshing, 
+      refreshData, 
+      lastUpdate, 
+      notifications, 
+      addNotification, 
+      markAllAsRead, 
+      deleteNotification 
+    }}>
       {children}
     </SensorContext.Provider>
   )
