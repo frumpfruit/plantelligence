@@ -3,7 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { ArrowLeft, Thermometer, FlaskConical, Activity, TrendingDown, TrendingUp, CheckCircle2, AlertCircle, Info } from "lucide-react"
+import { ArrowLeft, Thermometer, FlaskConical, Activity, TrendingDown, TrendingUp, CheckCircle2, AlertCircle, Info, Settings2 } from "lucide-react"
 import { useSensors } from "@/components/SensorProvider"
 import Link from "next/link"
 import { useParams } from "next/navigation"
@@ -159,10 +159,17 @@ export default function PlantDetailPage() {
                 <li>Gunakan pH Down jika pH di atas 7.2</li>
               </ul>
             </div>
-            <div className="p-4 border rounded-xl">
-              <h4 className="text-sm font-bold mb-2">Estimasi Panen</h4>
-              <p className="text-2xl font-bold text-primary">14 Hari Lagi</p>
-              <p className="text-[10px] text-muted-foreground uppercase mt-1">Sesuai standar pertumbuhan Selada</p>
+            <div className="p-4 border rounded-xl flex flex-col justify-between">
+              <div>
+                <h4 className="text-sm font-bold mb-2">Estimasi Panen</h4>
+                <p className="text-2xl font-bold text-primary">14 Hari Lagi</p>
+              </div>
+              <Link href="/kontrol">
+                <Button className="w-full mt-4 gap-2">
+                  <Settings2 className="h-4 w-4" />
+                  Buka Kontrol Sistem
+                </Button>
+              </Link>
             </div>
           </div>
         </CardContent>

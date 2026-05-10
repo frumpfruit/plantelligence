@@ -303,75 +303,81 @@ export default function DashboardPage() {
         {/* Kolom Info Kanan */}
         <Card className="col-span-1 md:col-span-3">
           <CardHeader>
-            <CardTitle>Ringkasan Tanaman</CardTitle>
+            <CardTitle>Ringkasan Kesehatan Tanaman</CardTitle>
+            <CardDescription>Status real-time seluruh tanaman di farm.</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-6">
               <div className="flex items-center">
-                <div className="h-10 w-10 rounded-full bg-emerald-100 flex items-center justify-center mr-4 border border-emerald-200">
-                  <Sprout className="h-5 w-5 text-emerald-600" />
-                </div>
-                <div className="flex-1 space-y-1">
-                  <p className="text-sm font-medium leading-none">Total Aktif</p>
-                  <p className="text-xs text-muted-foreground">Selada, Pakcoy, Bayam</p>
-                </div>
-                <div className="font-medium text-lg">1,240</div>
-              </div>
-              <div className="flex items-center">
                 <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center mr-4 border border-blue-200">
-                  <CheckCircle2 className="h-5 w-5 text-blue-600" />
+                  <Sprout className="h-5 w-5 text-blue-600" />
                 </div>
                 <div className="flex-1 space-y-1">
-                  <p className="text-sm font-medium leading-none">Status Sehat</p>
-                  <p className="text-xs text-muted-foreground">Optimal growth rate</p>
+                  <p className="text-sm font-medium leading-none">Total Tanaman Aktif</p>
+                  <p className="text-xs text-muted-foreground">Berbagai varietas hidroponik</p>
                 </div>
-                <div className="font-medium text-lg text-blue-600">1,180</div>
+                <div className="font-bold text-lg">1,240</div>
               </div>
-              <div className="flex items-center">
-                <div className="h-10 w-10 rounded-full bg-amber-100 flex items-center justify-center mr-4 border border-amber-200">
-                  <Activity className="h-5 w-5 text-amber-600" />
+              
+              <div className="space-y-2">
+                <div className="flex justify-between text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                  <span>Kondisi Global</span>
+                  <span>{isWarning ? "Perlu Tindakan" : "Sangat Baik"}</span>
                 </div>
-                <div className="flex-1 space-y-1">
-                  <p className="text-sm font-medium leading-none">Perlu Perhatian</p>
-                  <p className="text-xs text-muted-foreground">Gejala kekurangan nutrisi</p>
+                <div className="h-3 w-full bg-muted rounded-full overflow-hidden flex">
+                  <div className="h-full bg-success w-[85%]" />
+                  <div className="h-full bg-warning w-[10%]" />
+                  <div className="h-full bg-destructive w-[5%]" />
                 </div>
-                <div className="font-medium text-lg text-amber-600">60</div>
+                <div className="flex gap-4 mt-2">
+                  <div className="flex items-center gap-1.5 text-xs">
+                    <span className="w-2 h-2 rounded-full bg-success" />
+                    <span className="text-muted-foreground">1,180 Sehat</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 text-xs">
+                    <span className="w-2 h-2 rounded-full bg-warning" />
+                    <span className="text-muted-foreground">60 Warning</span>
+                  </div>
+                </div>
               </div>
-            </div>
 
-            <div className="mt-8 pt-6 border-t">
-              <h4 className="text-sm font-medium mb-4">Aktivitas & Log Sistem Terbaru</h4>
-              <div className="space-y-4">
-                <AnimatePresence mode="popLayout">
-                  {isWarning && (
-                    <motion.div 
-                      key="warning-log"
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      className="flex items-start gap-3"
-                    >
-                      <span className="flex h-2 w-2 rounded-full bg-destructive mt-1.5 shadow-[0_0_8px_rgba(239,68,68,0.5)] animate-pulse" />
+              <div className="pt-6 border-t">
+                <h4 className="text-sm font-bold mb-4 flex items-center gap-2">
+                  <Activity className="h-4 w-4 text-primary" />
+                  Log Sistem & Aktivitas
+                </h4>
+                <div className="space-y-4">
+                  <AnimatePresence mode="popLayout">
+                    {isWarning && (
+                      <motion.div 
+                        key="warning-log"
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        className="p-3 bg-destructive/5 border border-destructive/20 rounded-lg flex items-start gap-3"
+                      >
+                        <AlertTriangle className="h-4 w-4 text-destructive mt-0.5 shrink-0 animate-pulse" />
+                        <div>
+                          <p className="text-xs font-bold text-destructive">Kadar pH/Nutrisi di luar batas aman!</p>
+                          <p className="text-[10px] text-muted-foreground mt-0.5">Segera lakukan kalibrasi di menu Kontrol.</p>
+                        </div>
+                      </motion.div>
+                    )}
+                    <div key="pump-log" className="flex items-start gap-3">
+                      <span className="flex h-2 w-2 rounded-full bg-emerald-500 mt-1.5" />
                       <div>
-                        <p className="text-sm font-medium text-destructive">Peringatan: Kualitas air di luar batas normal!</p>
-                        <p className="text-xs text-muted-foreground mt-0.5">Baru saja</p>
+                        <p className="text-sm font-medium">Sistem Dosing Nutrisi A Aktif</p>
+                        <p className="text-xs text-muted-foreground">5 menit yang lalu</p>
                       </div>
-                    </motion.div>
-                  )}
-                  <div key="pump-log" className="flex items-start gap-3">
-                    <span className="flex h-2 w-2 rounded-full bg-emerald-500 mt-1.5 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
-                    <div>
-                      <p className="text-sm font-medium">Pompa Nutrisi A menyala (Dosing 50ml)</p>
-                      <p className="text-xs text-muted-foreground mt-0.5">Baru saja</p>
                     </div>
-                  </div>
-                  <div key="light-log" className="flex items-start gap-3">
-                    <span className="flex h-2 w-2 rounded-full bg-amber-500 mt-1.5" />
-                    <div>
-                      <p className="text-sm font-medium">Intensitas cahaya ditingkatkan (Auto-Dim)</p>
-                      <p className="text-xs text-muted-foreground mt-0.5">2 jam yang lalu</p>
+                    <div key="light-log" className="flex items-start gap-3">
+                      <span className="flex h-2 w-2 rounded-full bg-slate-300 mt-1.5" />
+                      <div>
+                        <p className="text-sm font-medium">Update data sensor eksternal</p>
+                        <p className="text-xs text-muted-foreground">15 menit yang lalu</p>
+                      </div>
                     </div>
-                  </div>
-                </AnimatePresence>
+                  </AnimatePresence>
+                </div>
               </div>
             </div>
           </CardContent>
