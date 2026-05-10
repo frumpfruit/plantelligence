@@ -14,13 +14,16 @@ export default function PlantDetailPage() {
   const { id } = useParams()
   const { data, lastUpdate } = useSensors()
 
+  // Determine if any parameter is out of bounds
+  const isCritical = data.ph < 5.8 || data.ph > 7.2 || data.tds < 700 || data.tempWater > 25.5
+
   // Mock plant data - in real app would fetch by ID
   const plant = {
     id: "1",
     name: "Selada Keriting",
     type: "Hydroponic Lettuce",
     plantedDate: "12 April 2024",
-    status: data.ph < 5.6 || data.tds < 600 ? "Kritis" : "Sehat",
+    status: isCritical ? "Kritis" : "Sehat",
     targets: {
       ph: 6.0,
       tds: 800,
@@ -154,7 +157,7 @@ export default function PlantDetailPage() {
               Kondisi Terkini (AI Analysis)
             </h3>
             <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-              Berdasarkan data sensor pukul <strong>{lastUpdate}</strong>, sistem mendeteksi bahwa tanaman sedang dalam status 
+              Berdasarkan data sensor pukul <strong>{lastUpdate}</strong>, sistem mendeteksi bahwa tanaman sedang dalam status{" "}
               <span className={cn("font-bold mx-1", plant.status === "Sehat" ? "text-success" : "text-destructive")}>
                 {plant.status}
               </span>. 
