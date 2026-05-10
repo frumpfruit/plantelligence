@@ -10,7 +10,7 @@ import { useSensors } from "@/components/SensorProvider"
 import Link from "next/link"
 
 export default function NotificationPage() {
-  const { notifications, deleteNotification, markAllAsRead } = useSensors()
+  const { notifications, deleteNotification, toggleHandled } = useSensors()
   const [filter, setFilter] = useState("all")
   const [isClearing, setIsClearing] = useState(false)
   const { showToast } = useToast()
@@ -18,6 +18,7 @@ export default function NotificationPage() {
   const filteredNotifs = useMemo(() => {
     return notifications.filter(n => {
       if (filter === "all") return true
+      if (filter === "pending") return !n.handled
       return n.type === filter
     })
   }, [notifications, filter])
@@ -69,6 +70,14 @@ export default function NotificationPage() {
               Semua
             </Button>
             <Button 
+              variant={filter === "pending" ? "secondary" : "ghost"} 
+              size="sm" 
+              onClick={() => setFilter("pending")}
+              className="h-8 text-xs px-3 text-warning"
+            >
+              Pending
+            </Button>
+            <Button 
               variant={filter === "critical" ? "secondary" : "ghost"} 
               size="sm" 
               onClick={() => setFilter("critical")}
@@ -105,20 +114,46 @@ export default function NotificationPage() {
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: 20 }}
-                    className={`p-4 flex gap-4 group transition-colors ${notif.read ? 'opacity-70 bg-background' : 'bg-primary/5'}`}
+                    className={cn(
+                      "p-4 flex gap-4 group transition-colors",
+                      notif.handled ? "opacity-60 bg-muted/20" : notif.read ? "bg-background" : "bg-primary/5"
+                    )}
                   >
-                    <div className={`mt-0.5 h-10 w-10 shrink-0 rounded-full flex items-center justify-center ${colorClass}`}>
+                    <div className={cn(
+                      "mt-0.5 h-10 w-10 shrink-0 rounded-full flex items-center justify-center",
+                      colorClass
+                    )}>
                       <Icon className="h-5 w-5" />
                     </div>
                     <div className="flex-1 space-y-1">
                       <div className="flex justify-between items-start">
-                        <div>
-                          <p className={`text-sm font-medium leading-none ${notif.read ? 'text-muted-foreground' : 'text-foreground font-semibold'}`}>
-                            {notif.title}
-                          </p>
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2">
+                            <p className={cn(
+                              "text-sm font-medium leading-none",
+                              notif.handled ? "text-muted-foreground line-through" : "text-foreground font-semibold"
+                            )}>
+                              {notif.title}
+                            </p>
+                            <Badge variant={notif.handled ? "success" : "secondary"} className="h-4 text-[9px] px-1.5 uppercase tracking-wider">
+                              {notif.handled ? "Selesai" : "Pending"}
+                            </Badge>
+                          </div>
                           <p className="text-xs text-muted-foreground mt-1">{notif.message}</p>
                         </div>
                         <div className="flex opacity-0 group-hover:opacity-100 transition-opacity gap-1 ml-4">
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className={cn(
+                              "h-7 w-7 rounded-full",
+                              notif.handled ? "text-muted-foreground hover:bg-muted" : "text-success hover:bg-success/10"
+                            )} 
+                            onClick={() => toggleHandled(notif.id)}
+                            title={notif.handled ? "Batalkan Selesai" : "Tandai Selesai"}
+                          >
+                            <Check className={cn("h-3.5 w-3.5", notif.handled && "opacity-50")} />
+                          </Button>
                           {notif.plantId && (
                             <Link href={`/tanaman/${notif.plantId}`}>
                               <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-primary hover:bg-primary/10">

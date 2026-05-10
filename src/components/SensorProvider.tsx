@@ -10,6 +10,7 @@ export interface Notification {
   message: string
   time: string
   read: boolean
+  handled: boolean
   plantId?: string
 }
 
@@ -28,9 +29,10 @@ interface SensorContextType {
   refreshData: (quiet?: boolean) => void
   lastUpdate: string
   notifications: Notification[]
-  addNotification: (notif: Omit<Notification, "id" | "time" | "read">) => void
+  addNotification: (notif: Omit<Notification, "id" | "time" | "read" | "handled">) => void
   markAllAsRead: () => void
   deleteNotification: (id: string) => void
+  toggleHandled: (id: string) => void
 }
 
 const SensorContext = createContext<SensorContextType | undefined>(undefined)
@@ -46,6 +48,7 @@ export function SensorProvider({ children }: { children: ReactNode }) {
       message: "Segera lakukan penyesuaian pH untuk mencegah akar tanaman rusak.",
       time: "10 menit yang lalu",
       read: false,
+      handled: false,
       plantId: "1"
     }
   ])
@@ -58,12 +61,13 @@ export function SensorProvider({ children }: { children: ReactNode }) {
     lux: "12.5k"
   })
 
-  const addNotification = useCallback((notif: Omit<Notification, "id" | "time" | "read">) => {
+  const addNotification = useCallback((notif: Omit<Notification, "id" | "time" | "read" | "handled">) => {
     const newNotif: Notification = {
       ...notif,
       id: Math.random().toString(36).substr(2, 9),
       time: "Baru saja",
-      read: false
+      read: false,
+      handled: false
     }
     setNotifications(prev => [newNotif, ...prev])
   }, [])
@@ -74,6 +78,10 @@ export function SensorProvider({ children }: { children: ReactNode }) {
 
   const deleteNotification = useCallback((id: string) => {
     setNotifications(prev => prev.filter(n => n.id !== id))
+  }, [])
+
+  const toggleHandled = useCallback((id: string) => {
+    setNotifications(prev => prev.map(n => n.id === id ? { ...n, handled: !n.handled } : n))
   }, [])
 
   const generateNewData = useCallback(() => {
@@ -134,7 +142,8 @@ export function SensorProvider({ children }: { children: ReactNode }) {
       notifications, 
       addNotification, 
       markAllAsRead, 
-      deleteNotification 
+      deleteNotification,
+      toggleHandled
     }}>
       {children}
     </SensorContext.Provider>
