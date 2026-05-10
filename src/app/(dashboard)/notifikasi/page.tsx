@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react"
 import { Card, CardContent } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { AlertCircle, AlertTriangle, Info, CheckCircle2, Trash2, Check, Loader2, ExternalLink } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
