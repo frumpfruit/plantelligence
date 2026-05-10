@@ -143,28 +143,28 @@ export default function NotificationPage() {
                           </div>
                           <p className="text-xs text-muted-foreground mt-1">{notif.message}</p>
                         </div>
-                        <div className="flex opacity-0 group-hover:opacity-100 transition-opacity gap-1 ml-4">
+                        <div className="flex gap-1 ml-auto sm:ml-4">
                           <Button 
                             variant="ghost" 
                             size="icon" 
                             className={cn(
-                              "h-7 w-7 rounded-full",
-                              notif.handled ? "text-muted-foreground hover:bg-muted" : "text-success hover:bg-success/10"
+                              "h-8 w-8 rounded-full shrink-0",
+                              notif.handled ? "text-muted-foreground bg-muted/50" : "text-success bg-success/5 hover:bg-success/10"
                             )} 
                             onClick={() => toggleHandled(notif.id)}
                             title={notif.handled ? "Batalkan Selesai" : "Tandai Selesai"}
                           >
-                            <Check className={cn("h-3.5 w-3.5", notif.handled && "opacity-50")} />
+                            <Check className={cn("h-4 w-4", notif.handled && "opacity-50")} />
                           </Button>
                           {notif.plantId && (
                             <Link href={`/tanaman/${notif.plantId}`}>
-                              <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-primary hover:bg-primary/10">
-                                <ExternalLink className="h-3.5 w-3.5" />
+                              <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full shrink-0 text-primary bg-primary/5 hover:bg-primary/10">
+                                <ExternalLink className="h-4 w-4" />
                               </Button>
                             </Link>
                           )}
-                          <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-destructive hover:bg-destructive/10" onClick={() => deleteNotification(notif.id)}>
-                            <Trash2 className="h-3.5 w-3.5" />
+                          <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full shrink-0 text-destructive bg-destructive/5 hover:bg-destructive/10" onClick={() => deleteNotification(notif.id)}>
+                            <Trash2 className="h-4 w-4" />
                           </Button>
                         </div>
                       </div>
