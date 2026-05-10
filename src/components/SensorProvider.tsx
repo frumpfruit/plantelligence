@@ -95,7 +95,7 @@ export function SensorProvider({ children }: { children: ReactNode }) {
     }
     
     // Check for critical values to trigger auto-notifications
-    if (newData.ph < 5.6) {
+    if (newData.ph < 5.8) {
       addNotification({
         type: "critical",
         title: "Kadar pH di bawah batas!",
@@ -104,7 +104,7 @@ export function SensorProvider({ children }: { children: ReactNode }) {
       })
     }
     
-    if (newData.tds < 600) {
+    if (newData.tds < 700) {
       addNotification({
         type: "warning",
         title: "Nutrisi (TDS) Turun",
@@ -123,13 +123,13 @@ export function SensorProvider({ children }: { children: ReactNode }) {
     setTimeout(() => {
       generateNewData()
       if (!quiet) setIsRefreshing(false)
-    }, quiet ? 0 : 1200)
+    }, quiet ? 0 : 800)
   }, [generateNewData])
 
   useEffect(() => {
     const interval = setInterval(() => {
       refreshData(true)
-    }, 15000) // Auto refresh every 15s
+    }, 5000) // Auto refresh every 5s
     return () => clearInterval(interval)
   }, [refreshData])
 
