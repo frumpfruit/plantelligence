@@ -99,9 +99,16 @@ export default function MonitoringPage() {
                   <span className="text-xs text-muted-foreground italic">Updated {lastUpdate}</span>
                 </div>
                 
-                {sensor.target && (
-                  <>
-                    <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
+                {sensor.target && sensor.max && (
+                  <div className="mt-4">
+                    <div className="relative h-2 w-full bg-muted rounded-full overflow-hidden mb-1">
+                      {/* Target Marker Line */}
+                      <div 
+                        className="absolute top-0 bottom-0 w-0.5 bg-foreground/30 z-10"
+                        style={{ left: `${(sensor.target / sensor.max) * 100}%` }}
+                      />
+                      
+                      {/* Current Value Bar */}
                       <motion.div 
                         className={cn(
                           "h-full transition-all duration-1000",
@@ -109,15 +116,21 @@ export default function MonitoringPage() {
                           sensor.status === "Warning" ? "bg-warning" : "bg-primary"
                         )} 
                         initial={{ width: 0 }}
-                        animate={{ width: `${(parseFloat(String(sensor.val)) / sensor.max) * 100}%` }}
+                        animate={{ width: `${Math.min((parseFloat(String(sensor.val)) / sensor.max) * 100, 100)}%` }}
                       />
                     </div>
-                    <div className="flex justify-between text-[10px] text-muted-foreground mt-1 font-medium">
-                      <span>0</span>
-                      <span>Target: {sensor.target}</span>
-                      <span>{sensor.max}</span>
+                    
+                    <div className="relative h-4 text-[10px] text-muted-foreground font-medium">
+                      <span className="absolute left-0">0</span>
+                      <span 
+                        className="absolute -translate-x-1/2 whitespace-nowrap text-foreground"
+                        style={{ left: `${(sensor.target / sensor.max) * 100}%` }}
+                      >
+                        Target: {sensor.target}
+                      </span>
+                      <span className="absolute right-0">{sensor.max}</span>
                     </div>
-                  </>
+                  </div>
                 )}
               </CardContent>
             </Card>
