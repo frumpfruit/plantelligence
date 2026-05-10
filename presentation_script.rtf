@@ -1,0 +1,71 @@
+{\rtf1\ansi\deff0
+{\fonttbl{\f0 Arial;}}
+{\colortbl;\red0\green0\blue0;\red0\green128\blue0;\red255\green0\blue0;}
+\f0\fs24
+\qc \b \fs32 NASKAH PRESENTASI & ANALISIS USER FLOW: PLANTELLIGENCE \b0 \fs24 \par
+\par
+\ql
+Dokumen ini disusun untuk memandu presentasi aplikasi Plantelligence, menggabungkan visi strategis dari dokumen User Flow asli dengan implementasi fitur teknis terbaru. \par
+\par
+\b I. RINGKASAN USER FLOW (Sesuai Dokumen Asli) \b0 \par
+\par
+Berikut adalah pemetaan alur dari dokumen user_flow_plantelligence.docx ke dalam fungsionalitas aplikasi kita: \par
+\par
+1. \b Menerima Notifikasi Otomatis \b0 \par
+- Kondisi: Sistem mendeteksi nilai sensor (pH, TDS, Suhu) yang melampaui batas normal. \par
+- Aksi: Push notification dikirim secara real-time. \par
+- Contoh: "Kadar nutrisi tanaman Selada turun di bawah batas minimum!" \par
+\par
+2. \b Membuka & Merespons Notifikasi \b0 \par
+- Aksi: Pengguna mengetuk notifikasi. \par
+- Hasil: Sistem membawa pengguna langsung ke halaman Detail Tanaman yang bermasalah. \par
+- Informasi: Menampilkan Nilai Saat Ini, Nilai Normal, dan Selisih (Delta). \par
+\par
+3. \b Melihat Data Secara Langsung \b0 \par
+- Aksi: Memantau Dashboard & Monitoring. \par
+- Visual: Indikator warna (Hijau/Kuning/Merah) menunjukkan status kondisi tanaman. \par
+- Update: Data diperbarui otomatis setiap beberapa detik. \par
+\par
+4. \b Tindak Lanjut (Penanganan) \b0 \par
+- Aksi: Pengguna menggunakan tombol "Buka Kontrol" untuk melakukan penyesuaian alat IoT. \par
+- Finalisasi: Menandai notifikasi sebagai "Handled" (Selesai). \par
+\par
+\page
+\b II. NASKAH PRESENTASI (Step-by-Step) \b0 \par
+\par
+\b 1. Pembukaan: Visi Plantelligence \b0 \par
+(Tampilkan Halaman Dashboard Overview) \par
+"Selamat pagi/siang rekan-rekan. Hari ini saya bangga memperkenalkan Plantelligence. Sebuah ekosistem cerdas yang dirancang untuk menjawab tantangan terbesar dalam hidroponik: Kecepatan dan Ketepatan Respon." \par
+"Aplikasi ini bukan sekadar dashboard statis, melainkan asisten cerdas yang memandu petani dari deteksi masalah hingga aksi nyata." \par
+\par
+\b 2. Alur 1: Monitoring & Kondisi Global \b0 \par
+(Scroll Dashboard & Tunjukkan Widget Kesehatan Global) \par
+"Sesuai dengan alur pertama di User Flow kami, pengguna dapat melihat data secara langsung. Di sini, kami menyediakan Ringkasan Kesehatan Tanaman. Dalam satu detik, petani tahu berapa tanaman yang sehat dan berapa yang butuh perhatian." \par
+(Buka Halaman Monitoring) \par
+"Visualisasi bar level kami tidak hanya menampilkan angka, tapi menggunakan Marker Target Dinamis. Jika level air atau nutrisi bergeser dari garis target, warna bar akan berubah, memberikan sinyal intuitif bagi pengguna." \par
+\par
+\b 3. Alur 2: Deteksi & Notifikasi Otomatis \b0 \par
+(Buka Halaman Notifikasi) \par
+"Mari kita masuk ke skenario nyata. Di sinilah letak 'kecerdasan' Plantelligence. Ketika sensor mendeteksi nilai pH turun di bawah 5.6 atau nutrisi di bawah 600 ppm, sistem akan memicu Notifikasi Otomatis." \par
+"Perhatikan daftar notifikasi ini. Setiap peringatan memiliki status 'Pending'. Ini memastikan tidak ada masalah yang terlewatkan. Kita tidak perlu menunggu tanaman layu untuk tahu ada masalah." \par
+\par
+\b 4. Alur 3: Respon & Analisa Detail \b0 \par
+(Klik Ikon Detail/Cari di salah satu Notifikasi Kritis) \par
+"Sesuai alur di dokumen kami: 'Pengguna mengetuk notifikasi dan dibawa ke detail'. Di halaman ini, kita melakukan analisa mendalam." \par
+"Kita menyajikan data dalam format Current vs Normal. Kita bisa melihat, misalnya, pH saat ini 5.2 sementara normalnya 6.0. Selisih 0.8 ini langsung dihitung oleh sistem, lengkap dengan rekomendasi tindakan seperti 'Tambahkan pH Down'." \par
+\par
+\b 5. Alur 4: Aksi Penanganan (Closing the Loop) \b0 \par
+(Klik Tombol 'Buka Kontrol Sistem' di halaman Detail) \par
+"Inilah bagian terpenting: Responsibilitas. Setelah melihat masalah, pengguna tidak perlu mencari-cari menu. Cukup klik 'Buka Kontrol', dan pengguna langsung bisa melakukan penyesuaian manual pada pompa nutrisi atau grow light." \par
+(Kembali ke Notifikasi & Tandai Selesai) \par
+"Setelah tindakan diambil, pengguna menandai tugas tersebut sebagai 'Selesai'. Judul akan dicoret, status berubah menjadi Hijau. Alur kerja tuntas." \par
+\par
+\b 6. Penutup \b0 \par
+"Dengan Plantelligence, kita mengubah cara kerja pertanian: dari reaktif menjadi proaktif, dari manual menjadi otomatis. Terima kasih." \par
+\par
+\b III. KEUNGGULAN TEKNIS UNTUK HIGHLIGHT \b0 \par
+- Real-time Synch: Sinkronisasi data setiap 15 detik menggunakan state management yang efisien. \par
+- Visual UX: Penggunaan warna yang harmonis (Emerald untuk sehat, Amber untuk peringatan, Rose untuk kritis). \par
+- Data Integrity: Parsing otomatis untuk nilai sensor yang kompleks. \par
+- Traceability: Setiap notifikasi memiliki rekam jejak penanganan. \par
+}
