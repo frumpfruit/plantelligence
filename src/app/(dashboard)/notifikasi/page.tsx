@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { useToast } from "@/components/ToastProvider"
 import { useSensors } from "@/components/SensorProvider"
 import Link from "next/link"
+import { cn } from "@/lib/utils"
 
 export default function NotificationPage() {
   const { notifications, deleteNotification, toggleHandled } = useSensors()
