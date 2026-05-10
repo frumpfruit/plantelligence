@@ -18,13 +18,20 @@ export default function MonitoringPage() {
     showToast("Memperbarui data sensor...", "info")
   }
 
+  const parseSensorValue = (val: string | number) => {
+    if (typeof val === "string" && val.toLowerCase().endsWith("k")) {
+      return parseFloat(val) * 1000
+    }
+    return parseFloat(String(val))
+  }
+
   const sensors = [
     { title: "Sensor pH Air", val: data.ph, unit: "pH", icon: FlaskConical, color: "primary", target: 6.0, max: 14, status: data.ph < 5.5 ? "Critical" : data.ph < 6.0 ? "Warning" : "Normal" },
     { title: "Sensor Nutrisi (TDS)", val: data.tds, unit: "ppm", icon: Activity, color: "warning", target: 800, max: 1000, status: data.tds < 600 ? "Critical" : data.tds < 800 ? "Warning" : "Normal" },
     { title: "Suhu Air", val: data.tempWater, unit: "°C", icon: Thermometer, color: "info", target: 24.0, max: 40, status: (data.tempWater < 23.5 || data.tempWater > 24.5) ? "Warning" : "Optimal" },
     { title: "Kelembaban Udara", val: data.humidity, unit: "%", icon: Droplets, color: "primary", target: 60, max: 100, status: data.humidity < 40 ? "Warning" : "Normal" },
     { title: "Suhu Ruangan", val: data.tempAir, unit: "°C", icon: Wind, color: "primary", target: 26.0, max: 50, status: data.tempAir > 32 ? "Critical" : data.tempAir > 30 ? "Warning" : "Normal" },
-    { title: "Intensitas Cahaya", val: data.lux, unit: "Lux", icon: Zap, color: "primary", target: 5000, max: 10000, status: "Normal" },
+    { title: "Intensitas Cahaya", val: data.lux, unit: "Lux", icon: Zap, color: "primary", target: 10000, max: 20000, status: "Normal" },
   ]
 
   const getStatusColorClass = (status: string) => {
@@ -116,7 +123,7 @@ export default function MonitoringPage() {
                           sensor.status === "Warning" ? "bg-warning" : "bg-primary"
                         )} 
                         initial={{ width: 0 }}
-                        animate={{ width: `${Math.min((parseFloat(String(sensor.val)) / sensor.max) * 100, 100)}%` }}
+                        animate={{ width: `${Math.min((parseSensorValue(sensor.val) / sensor.max) * 100, 100)}%` }}
                       />
                     </div>
                     
@@ -126,9 +133,9 @@ export default function MonitoringPage() {
                         className="absolute -translate-x-1/2 whitespace-nowrap text-foreground"
                         style={{ left: `${(sensor.target / sensor.max) * 100}%` }}
                       >
-                        Target: {sensor.target}
+                        Target: {sensor.target >= 1000 ? `${sensor.target / 1000}k` : sensor.target}
                       </span>
-                      <span className="absolute right-0">{sensor.max}</span>
+                      <span className="absolute right-0">{sensor.max >= 1000 ? `${sensor.max / 1000}k` : sensor.max}</span>
                     </div>
                   </div>
                 )}
